@@ -1,0 +1,316 @@
+{
+  "best_params": {
+    "state_dim": 24,
+    "action_dim": 4,
+    "hidden_dim": 128,
+    "network_layers": 3,
+    "learning_rate": 0.0003,
+    "gamma": 0.99,
+    "lam": 0.95,
+    "epsilon": 0.2,
+    "epochs": 10,
+    "batch_size": 128,
+    "episodes": 15000,
+    "max_steps": 300,
+    "entropy_coef": 0.05,
+    "dropout_rate": 0.1,
+    "use_gradient_clipping": true,
+    "gradient_clip_value": 0.5,
+    "use_lr_scheduler": true,
+    "lr_decay_rate": 0.999,
+    "log_interval": 200,
+    "env_width": 20,
+    "env_height": 20,
+    "obstacle_ratio": 0.2
+  },
+  "all_results": [
+    {
+      "learning_rate": 0.0001,
+      "gamma": 0.99,
+      "entropy_coef": 0.001,
+      "performance": 32.636657663605696
+    },
+    {
+      "learning_rate": 0.0001,
+      "gamma": 0.99,
+      "entropy_coef": 0.01,
+      "performance": 32.40032771485072
+    },
+    {
+      "learning_rate": 0.0001,
+      "gamma": 0.99,
+      "entropy_coef": 0.02,
+      "performance": 32.73951486090039
+    },
+    {
+      "learning_rate": 0.0001,
+      "gamma": 0.99,
+      "entropy_coef": 0.05,
+      "performance": 32.18613872845628
+    },
+    {
+      "learning_rate": 0.0001,
+      "gamma": 0.995,
+      "entropy_coef": 0.001,
+      "performance": 32.721644122715716
+    },
+    {
+      "learning_rate": 0.0001,
+      "gamma": 0.995,
+      "entropy_coef": 0.01,
+      "performance": 32.27897455481751
+    },
+    {
+      "learning_rate": 0.0001,
+      "gamma": 0.995,
+      "entropy_coef": 0.02,
+      "performance": 32.5945768530654
+    },
+    {
+      "learning_rate": 0.0001,
+      "gamma": 0.995,
+      "entropy_coef": 0.05,
+      "performance": 32.32107741211267
+    },
+    {
+      "learning_rate": 0.0001,
+      "gamma": 0.999,
+      "entropy_coef": 0.001,
+      "performance": 32.38315592316046
+    },
+    {
+      "learning_rate": 0.0001,
+      "gamma": 0.999,
+      "entropy_coef": 0.01,
+      "performance": 32.44944059766232
+    },
+    {
+      "learning_rate": 0.0001,
+      "gamma": 0.999,
+      "entropy_coef": 0.02,
+      "performance": 32.2591616978353
+    },
+    {
+      "learning_rate": 0.0001,
+      "gamma": 0.999,
+      "entropy_coef": 0.05,
+      "performance": 32.193831023575385
+    },
+    {
+      "learning_rate": 0.0003,
+      "gamma": 0.99,
+      "entropy_coef": 0.001,
+      "performance": 32.89736171957422
+    },
+    {
+      "learning_rate": 0.0003,
+      "gamma": 0.99,
+      "entropy_coef": 0.01,
+      "performance": 32.516070456754704
+    },
+    {
+      "learning_rate": 0.0003,
+      "gamma": 0.99,
+      "entropy_coef": 0.02,
+      "performance": 32.692878597655124
+    },
+    {
+      "learning_rate": 0.0003,
+      "gamma": 0.99,
+      "entropy_coef": 0.05,
+      "performance": 33.04594412271572
+    },
+    {
+      "learning_rate": 0.0003,
+      "gamma": 0.995,
+      "entropy_coef": 0.001,
+      "performance": 32.60567045675471
+    },
+    {
+      "learning_rate": 0.0003,
+      "gamma": 0.995,
+      "entropy_coef": 0.01,
+      "performance": 32.81064412271572
+    },
+    {
+      "learning_rate": 0.0003,
+      "gamma": 0.995,
+      "entropy_coef": 0.02,
+      "performance": 32.818444122715725
+    },
+    {
+      "learning_rate": 0.0003,
+      "gamma": 0.995,
+      "entropy_coef": 0.05,
+      "performance": 32.807821917613865
+    },
+    {
+      "learning_rate": 0.0003,
+      "gamma": 0.999,
+      "entropy_coef": 0.001,
+      "performance": 32.68934513284249
+    },
+    {
+      "learning_rate": 0.0003,
+      "gamma": 0.999,
+      "entropy_coef": 0.01,
+      "performance": 32.662637116779344
+    },
+    {
+      "learning_rate": 0.0003,
+      "gamma": 0.999,
+      "entropy_coef": 0.02,
+      "performance": 32.823305033801134
+    },
+    {
+      "learning_rate": 0.0003,
+      "gamma": 0.999,
+      "entropy_coef": 0.05,
+      "performance": 32.58964412271572
+    },
+    {
+      "learning_rate": 0.001,
+      "gamma": 0.99,
+      "entropy_coef": 0.001,
+      "performance": 32.66452577550948
+    },
+    {
+      "learning_rate": 0.001,
+      "gamma": 0.99,
+      "entropy_coef": 0.01,
+      "performance": 32.59764412271572
+    },
+    {
+      "learning_rate": 0.001,
+      "gamma": 0.99,
+      "entropy_coef": 0.02,
+      "performance": 32.16394412271572
+    },
+    {
+      "learning_rate": 0.001,
+      "gamma": 0.99,
+      "entropy_coef": 0.05,
+      "performance": 32.55271114733758
+    },
+    {
+      "learning_rate": 0.001,
+      "gamma": 0.995,
+      "entropy_coef": 0.001,
+      "performance": 32.07960503380113
+    },
+    {
+      "learning_rate": 0.001,
+      "gamma": 0.995,
+      "entropy_coef": 0.01,
+      "performance": 29.39674412271571
+    },
+    {
+      "learning_rate": 0.001,
+      "gamma": 0.995,
+      "entropy_coef": 0.02,
+      "performance": 32.21274412271571
+    },
+    {
+      "learning_rate": 0.001,
+      "gamma": 0.995,
+      "entropy_coef": 0.05,
+      "performance": 32.83265611522508
+    },
+    {
+      "learning_rate": 0.001,
+      "gamma": 0.999,
+      "entropy_coef": 0.001,
+      "performance": 31.855944122715716
+    },
+    {
+      "learning_rate": 0.001,
+      "gamma": 0.999,
+      "entropy_coef": 0.01,
+      "performance": 32.29547859765512
+    },
+    {
+      "learning_rate": 0.001,
+      "gamma": 0.999,
+      "entropy_coef": 0.02,
+      "performance": 32.20444412271572
+    },
+    {
+      "learning_rate": 0.001,
+      "gamma": 0.999,
+      "entropy_coef": 0.05,
+      "performance": 32.632344122715715
+    },
+    {
+      "learning_rate": 0.003,
+      "gamma": 0.99,
+      "entropy_coef": 0.001,
+      "performance": 31.013788278592997
+    },
+    {
+      "learning_rate": 0.003,
+      "gamma": 0.99,
+      "entropy_coef": 0.01,
+      "performance": 31.548444122715715
+    },
+    {
+      "learning_rate": 0.003,
+      "gamma": 0.99,
+      "entropy_coef": 0.02,
+      "performance": 10.285744122715762
+    },
+    {
+      "learning_rate": 0.003,
+      "gamma": 0.99,
+      "entropy_coef": 0.05,
+      "performance": 31.77748390293715
+    },
+    {
+      "learning_rate": 0.003,
+      "gamma": 0.995,
+      "entropy_coef": 0.001,
+      "performance": 18.78530503380115
+    },
+    {
+      "learning_rate": 0.003,
+      "gamma": 0.995,
+      "entropy_coef": 0.01,
+      "performance": 29.72575557889572
+    },
+    {
+      "learning_rate": 0.003,
+      "gamma": 0.995,
+      "entropy_coef": 0.02,
+      "performance": 20.102152862433744
+    },
+    {
+      "learning_rate": 0.003,
+      "gamma": 0.995,
+      "entropy_coef": 0.05,
+      "performance": 30.829098346684674
+    },
+    {
+      "learning_rate": 0.003,
+      "gamma": 0.999,
+      "entropy_coef": 0.001,
+      "performance": 30.21026346586331
+    },
+    {
+      "learning_rate": 0.003,
+      "gamma": 0.999,
+      "entropy_coef": 0.01,
+      "performance": 30.748944122715717
+    },
+    {
+      "learning_rate": 0.003,
+      "gamma": 0.999,
+      "entropy_coef": 0.02,
+      "performance": 30.182244122715712
+    },
+    {
+      "learning_rate": 0.003,
+      "gamma": 0.999,
+      "entropy_coef": 0.05,
+      "performance": 28.441823623363895
+    }
+  ]
+}

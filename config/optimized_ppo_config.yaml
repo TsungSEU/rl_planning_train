@@ -1,0 +1,40 @@
+# Optimized PPO Training Configuration for Path Planning
+# This configuration has been tuned for better performance
+
+# Environment parameters
+state_dim: 2               # (x, y) position
+action_dim: 4              # 4-directional movement (up, right, down, left)
+hidden_dim: 128            # Increased hidden layer size for better representation
+
+# PPO hyperparameters - Optimized values
+learning_rate: 0.0003      # Slightly increased learning rate for faster convergence
+gamma: 0.999               # Higher gamma to consider long-term rewards
+lam: 0.95                  # GAE lambda
+epsilon: 0.2               # PPO clip parameter
+epochs: 10                 # Number of update epochs
+batch_size: 64             # Mini-batch size
+
+# Training parameters
+episodes: 10000            # Increased episodes for better training
+max_steps: 200             # Maximum steps per episode
+
+# Exploration parameters
+entropy_coef: 0.01         # Entropy coefficient for exploration
+
+# Network architecture improvements
+network_layers: 3          # Number of hidden layers
+dropout_rate: 0.0          # Dropout rate (0.0 = no dropout)
+
+# Advanced training techniques
+use_gradient_clipping: true     # Enable gradient clipping
+gradient_clip_value: 0.5        # Gradient clipping value
+use_lr_scheduler: false         # Learning rate scheduling
+lr_decay_rate: 0.99             # Learning rate decay rate
+
+# Logging
+log_interval: 100          # Log every N episodes
+
+# Environment settings
+env_width: 20              # Environment width
+env_height: 20             # Environment height
+obstacle_ratio: 0.2        # Ratio of obstacles in complex environment
