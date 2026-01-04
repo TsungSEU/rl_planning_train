@@ -6,7 +6,6 @@ Starts with simple tasks and gradually increases difficulty
 
 import numpy as np
 import torch
-import yaml
 import argparse
 import logging
 from pathlib import Path
@@ -16,8 +15,8 @@ import os
 # Add parent directory to path to import environment
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from environment import SimplePathPlanningEnv
-from planner_rl_train import PPOTrainer, load_training_config
+from utils.environment import SimplePathPlanningEnv
+from planner_train import PPOAgent, load_training_config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -76,7 +75,7 @@ def train_curriculum(config, stages=5):
         
         # Initialize or reuse trainer
         if trainer is None:
-            trainer = PPOTrainer(config)
+            trainer = PPOAgent(config)
         # Note: We keep the same trainer to preserve learned weights across stages
         
         # Training metrics for this stage
@@ -110,7 +109,7 @@ def train_curriculum(config, stages=5):
                 state_tensor = torch.tensor(np.array(state), dtype=torch.float32)
                 
                 # Get action probabilities and value
-                logits, value = trainer.actor_critic(state_tensor)
+                logits, value = trainer.actor_critic(state_tensor, use_softmax=False)
                 # Use logits directly for Categorical distribution
                 dist = torch.distributions.Categorical(logits=logits)
                 

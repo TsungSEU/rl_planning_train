@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Hyperparameter tuning script for PPO path planning
+Hyperparameter tuning script for PPOAgent path planning
 Performs grid search over key hyperparameters
 """
 
@@ -9,7 +9,6 @@ import torch
 import yaml
 import argparse
 import logging
-from pathlib import Path
 import itertools
 import json
 import sys
@@ -18,8 +17,8 @@ import os
 # Add parent directory to path to import environment
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from environment import SimplePathPlanningEnv
-from planner_rl_train import PPOTrainer
+from utils.environment import SimplePathPlanningEnv
+from planner_train import PPOAgent
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -40,7 +39,7 @@ def evaluate_hyperparams(config):
     env = SimplePathPlanningEnv(width=10, height=10)  # Smaller env for faster tuning
     
     # Initialize trainer
-    trainer = PPOTrainer(config)
+    trainer = PPOAgent(config)
     
     # Metrics
     episode_rewards = []
@@ -68,7 +67,7 @@ def evaluate_hyperparams(config):
             state_tensor = torch.tensor(state, dtype=torch.float32)
             
             # Get action probabilities and value
-            logits, value = trainer.actor_critic(state_tensor)
+            logits, value = trainer.actor_critic(state_tensor, use_softmax=False)
             # Use logits directly for Categorical distribution
             dist = torch.distributions.Categorical(logits=logits)
             

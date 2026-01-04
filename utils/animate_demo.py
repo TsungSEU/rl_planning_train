@@ -17,8 +17,8 @@ import os
 # Add parent directory to path to import environment
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from environment import PathPlanningEnvironment, SimplePathPlanningEnv
-from planner_rl_train import ActorCritic
+from utils.environment import PathPlanningEnvironment, SimplePathPlanningEnv
+from planner_train import ActorCritic
 
 
 def create_policy_animation(env, model=None, save_path='agent_movement.gif', max_steps=50):
@@ -38,7 +38,7 @@ def create_policy_animation(env, model=None, save_path='agent_movement.gif', max
     fig, ax = plt.subplots(1, 1, figsize=(10, 10))
     
     # Initialize visualization elements
-    # Extract actual position from state (first two elements)
+    # Extract actual position from state (first two elements are normalized coordinates)
     agent_pos = state[:2] * np.array([env.width-1, env.height-1])  # Denormalize
     agent_circle = plt.Circle(agent_pos, 0.3, color='blue')
     
@@ -88,10 +88,10 @@ def create_policy_animation(env, model=None, save_path='agent_movement.gif', max
         if model is not None:
             # Use trained model to select action
             with torch.no_grad():
-                state_tensor = torch.tensor(state, dtype=torch.float32)
+                state_tensor = torch.tensor(state, dtype=torch.float32).unsqueeze(0)  # Add batch dimension
                 logits, _ = model(state_tensor)
                 # Use logits directly for action selection (argmax)
-                action = torch.argmax(logits).item()
+                action = torch.argmax(logits, dim=1).item()
         else:
             # Random action
             action = np.random.choice(env.action_space)
@@ -100,7 +100,7 @@ def create_policy_animation(env, model=None, save_path='agent_movement.gif', max
         next_state, reward, done, _ = env.step(action)
         state = next_state
         
-        # Extract actual position from state
+        # Extract actual position from state (first two elements are normalized coordinates)
         current_pos = state[:2] * np.array([env.width-1, env.height-1])  # Denormalize
         positions.append(current_pos.copy())
         rewards.append(reward)
@@ -161,7 +161,7 @@ def main():
     parser = argparse.ArgumentParser(description='Create animation of agent in environment')
     parser.add_argument('--model-path', type=str, 
                         help='Path to trained model weights (optional, for intelligent actions)')
-    parser.add_argument('--config-path', type=str, default='config/advanced_ppo_config.yaml',
+    parser.add_argument('--config-path', type=str, default='config/ppo_config.yaml',
                         help='Path to model configuration')
     parser.add_argument('--save-path', type=str, default='agent_movement.gif',
                         help='Path to save the animation')

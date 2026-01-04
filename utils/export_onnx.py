@@ -11,9 +11,8 @@ import sys
 import os
 
 # Add parent directory to path to import environment
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-from planner_rl_train import ActorCritic
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from planner_train import ActorCritic
 
 
 def export_to_onnx(model_path, config_path, output_path):
@@ -71,8 +70,8 @@ def export_to_onnx(model_path, config_path, output_path):
 def main():
     parser = argparse.ArgumentParser(description='Export trained model to ONNX format')
     parser.add_argument('--model-path', type=str, required=True,
-                        help='Path to trained model weights (.pth file)')
-    parser.add_argument('--config', type=str, default='config/advanced_ppo_config.yaml',
+                        help='Path to trained model weights (.pt file)')
+    parser.add_argument('--config', type=str, default='config/ppo_config.yaml',
                         help='Path to model configuration file')
     parser.add_argument('--output', type=str, default='models/planner_model.onnx',
                         help='Path to save exported ONNX model')

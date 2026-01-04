@@ -4,7 +4,6 @@ Final evaluation script for trained models
 Tests models on specific scenarios to demonstrate learning
 """
 
-import numpy as np
 import torch
 import yaml
 import argparse
@@ -16,8 +15,8 @@ import os
 # Add parent directory to path to import environment
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from environment import SimplePathPlanningEnv
-from planner_rl_train import ActorCritic
+from utils.environment import SimplePathPlanningEnv
+from planner_train import ActorCritic
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -54,13 +53,50 @@ def evaluate_on_specific_tasks(model_path: str, config_path: str) -> dict:
     
     logger.info(f"Loaded model from {model_path}")
     
-    # Define specific test cases
+    # Define specific test cases with denser and wider distribution
     test_cases = [
-        {"start": (0, 0), "goal": (1, 1)},   # Very simple case
-        {"start": (0, 0), "goal": (4, 4)},   # Simple case
-        {"start": (0, 0), "goal": (9, 9)},   # Medium case
-        {"start": (2, 3), "goal": (7, 8)},   # Offset case
-        {"start": (0, 0), "goal": (19, 19)}  # Complex case
+        # Very short distances (1-3 units)
+        {"start": (0, 0), "goal": (1, 1)},
+        {"start": (5, 5), "goal": (6, 5)},
+        {"start": (10, 10), "goal": (10, 12)},
+        {"start": (3, 7), "goal": (5, 7)},
+        {"start": (15, 2), "goal": (15, 4)},
+        
+        # Short distances (4-7 units)
+        {"start": (0, 0), "goal": (4, 4)},
+        {"start": (2, 3), "goal": (6, 3)},
+        {"start": (12, 8), "goal": (12, 13)},
+        {"start": (7, 1), "goal": (11, 5)},
+        {"start": (16, 16), "goal": (19, 19)},
+        
+        # Medium distances (8-15 units)
+        {"start": (0, 0), "goal": (9, 9)},
+        {"start": (1, 1), "goal": (10, 15)},
+        {"start": (5, 5), "goal": (15, 10)},
+        {"start": (3, 17), "goal": (18, 3)},
+        {"start": (19, 0), "goal": (0, 19)},
+        {"start": (10, 10), "goal": (0, 19)},
+        {"start": (8, 2), "goal": (2, 18)},
+        
+        # Long distances (16+ units) on standard map
+        {"start": (0, 0), "goal": (19, 19)},
+        {"start": (19, 0), "goal": (0, 19)},
+        {"start": (0, 19), "goal": (19, 0)},
+        {"start": (9, 0), "goal": (9, 19)},
+        {"start": (0, 9), "goal": (19, 9)},
+        
+        # Very long distances on large map
+        {"start": (0, 0), "goal": (50, 50), "width": 51, "height": 51},
+        {"start": (0, 0), "goal": (100, 100), "width": 101, "height": 101},
+        {"start": (25, 25), "goal": (75, 75), "width": 101, "height": 101},
+        {"start": (0, 50), "goal": (100, 50), "width": 101, "height": 101},
+        {"start": (50, 0), "goal": (50, 100), "width": 101, "height": 101},
+        
+        # Edge cases
+        {"start": (0, 0), "goal": (19, 0)},
+        {"start": (0, 0), "goal": (0, 19)},
+        {"start": (19, 19), "goal": (0, 19)},
+        {"start": (19, 19), "goal": (19, 0)},
     ]
     
     results = {}
@@ -69,12 +105,17 @@ def evaluate_on_specific_tasks(model_path: str, config_path: str) -> dict:
         logger.info(f"Testing case {i+1}: Start {case['start']} -> Goal {case['goal']}")
         
         # Initialize environment with specific start/goal
-        env = SimplePathPlanningEnv(width=20, height=20)
+        # Check if this is a large map case
+        if 'width' in case and 'height' in case:
+            env = SimplePathPlanningEnv(width=case['width'], height=case['height'])
+        else:
+            env = SimplePathPlanningEnv(width=20, height=20)
+            
         state = env.reset(start_pos=case['start'], goal_pos=case['goal'])
         
         total_reward = 0
         steps = 0
-        max_steps = 100  # Limit steps for each test case
+        max_steps = 300  # Increased limit for longer paths
         done = False
         
         # Track path for visualization
@@ -85,7 +126,7 @@ def evaluate_on_specific_tasks(model_path: str, config_path: str) -> dict:
             # Get action from policy
             with torch.no_grad():
                 state_tensor = torch.tensor(state, dtype=torch.float32)
-                logits, _ = model(state_tensor)
+                logits, _ = model(state_tensor, use_softmax=False)
                 # Use logits directly for action selection (argmax)
                 action = torch.argmax(logits).item()  # Greedy action selection
             
@@ -131,7 +172,7 @@ def main():
     parser = argparse.ArgumentParser(description='Final evaluation of trained models')
     parser.add_argument('--model-path', type=str, required=True,
                         help='Path to trained model weights')
-    parser.add_argument('--config', type=str, default='config/advanced_ppo_config.yaml',
+    parser.add_argument('--config', type=str, default='config/ppo_config.yaml',
                         help='Path to configuration file')
     parser.add_argument('--output', type=str, default='final_evaluation.json',
                         help='Path to save evaluation results')

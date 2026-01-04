@@ -14,7 +14,7 @@ import os
 # Add parent directory to path to import environment
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from environment import PathPlanningEnvironment, SimplePathPlanningEnv
+from utils.environment import PathPlanningEnvironment, SimplePathPlanningEnv
 
 
 def visualize_environments(save_path='static_environments.png'):
