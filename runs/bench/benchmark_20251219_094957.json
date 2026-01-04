@@ -1,0 +1,21 @@
+{
+  "random_policy": {
+    "policy_type": "random",
+    "avg_reward": -17.62565098080251,
+    "std_reward": 15.316679491270644,
+    "success_rate": 1.0,
+    "avg_episode_length": 199.877,
+    "avg_inference_time_ms": 0.012080836887842762,
+    "total_episodes": 1000
+  },
+  "trained_model": {
+    "policy_type": "trained_model",
+    "model_path": "models/ppo_weights.pt",
+    "avg_reward": 59.94011537017761,
+    "std_reward": 1.4210854715202004e-14,
+    "success_rate": 1.0,
+    "avg_episode_length": 38.0,
+    "avg_inference_time_ms": 0.17229309207514715,
+    "total_episodes": 1000
+  }
+}

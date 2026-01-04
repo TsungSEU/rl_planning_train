@@ -1,0 +1,17 @@
+{
+  "avg_reward": -185.2598846298218,
+  "std_reward": 0.0,
+  "success_rate": 1.0,
+  "avg_episode_length": 200.0,
+  "std_episode_length": 0.0,
+  "avg_final_distance": 19.0,
+  "std_final_distance": 0.0,
+  "total_episodes": 1000,
+  "successful_episodes": 1000,
+  "action_distribution": [
+    1.0,
+    0.0,
+    0.0,
+    0.0
+  ]
+}
