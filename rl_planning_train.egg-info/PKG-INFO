@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: aurora-planning-engine
+Version: 0.4.0
+Summary: Reinforcement Learning Path Planning Training Platform for Autonomous Vehicles
+Author: Aurora Planning Team
+Requires-Python: >=3.8
+Requires-Dist: click>=7.0
+Requires-Dist: torch>=1.10
+Requires-Dist: numpy
+Requires-Dist: tqdm
+Requires-Dist: pyyaml
+Requires-Dist: matplotlib
+Provides-Extra: export
+Requires-Dist: onnx; extra == "export"
+Requires-Dist: onnxruntime; extra == "export"
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"

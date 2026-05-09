@@ -1,0 +1,2 @@
+[console_scripts]
+aurora = aurora.cli.main:main

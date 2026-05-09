@@ -1,0 +1,187 @@
+# ============================================================================
+# Navigation + Data Collection Training Configuration
+# 高层导航 + 数据采集 分层RL训练配置
+#
+# 分层架构:
+#   Aurora (10Hz): 高层导航决策 + 数据价值评估
+#     → 输出速度命令 [vx, vy, ωz]
+#   LivelyBot (50Hz): 低层双足行走控制
+#     → 接收速度命令，输出 12 维关节目标
+#   物理仿真: Isaac Gym / MuJoCo (1000Hz)
+# ============================================================================
+
+planner_mode: nav_data
+
+# ========================================
+# 通用参数 (共享)
+# ========================================
+common:
+  # 数据闭环参数
+  sparse_threshold: 0.15
+  exploration_bonus: 10.0
+  redundancy_penalty: 5.0
+  grid_resolution: 0.5  # meters (匹配 LivelyBot 环境配置)
+
+  # 可达性参数
+  reachability_decay: 0.95
+  reachability_min_samples: 3
+  reachability_position_tolerance: 0.5
+
+  # 数据价值模型权重
+  w_spatial_rarity: 0.3
+  w_temporal_freshness: 0.15
+  w_scene_diversity: 0.2
+  w_quality: 0.15
+  w_coverage: 0.2
+
+# ========================================
+# Nav_Data 模式配置 (Aurora 高层策略)
+# ========================================
+nav_data:
+  # 控制频率
+  control:
+    policy_freq: 10          # Aurora 决策频率 (Hz)
+    low_level_freq: 50       # LivelyBot 执行频率 (Hz)
+    physics_freq: 1000       # 物理仿真频率 (Hz)
+    command_hold_steps: 5    # LivelyBot 每次执行 Aurora 命令的步数
+
+  # 状态空间配置 (42 维)
+  state:
+    state_dim: 43
+    # 状态组成:
+    # [0-2]:   base_lin_vel [vx, vy, vz]       ×2.0
+    # [3-5]:   base_ang_vel [wx, wy, wz]       ×1.0
+    # [6-7]:   norm_position [x/W, y/H]
+    # [8-9]:   heading [sinθ, cosθ]
+    # [10-11]: goal_direction [sinΔθ, cosΔθ]
+    # [12-14]: goal_distance [Δx, Δy, ‖Δ‖]     ÷max_range
+    # [15-22]: data_value_sectors (8方向)        [0,1]
+    # [23-26]: obstacle_sectors (4方向)          ÷max_range
+    # [27-28]: current_value [value, rarity]     [0,1]
+    # [29-30]: collection_status [ratio, coverage] [0,1]
+    # [31]:    terrain_type                      ÷6
+    # [32]:    obstacle_density                  [0,1]
+    # [33]:    gait_phase (from LivelyBot)       sin(2π·φ)
+    # [34-41]: action_history (8步)              [0,1]
+    # [42]:    remaining_budget                  [0,1]
+
+    obs_scales:
+      lin_vel: 2.0
+      ang_vel: 1.0
+      distance: 1.0  # ÷max_range
+    clip_observations: 18.0
+
+  # 动作空间配置 (3 维连续速度命令)
+  action:
+    action_dim: 3
+    action_space: continuous
+    # 范围与 LivelyBot Pi 训练范围对齐
+    forward_vel_range: [-0.3, 0.6]    # m/s
+    lateral_vel_range: [-0.3, 0.3]    # m/s
+    angular_vel_range: [-0.3, 0.3]    # rad/s
+    clip_actions: 18.0
+
+  # 奖励函数配置 (10 个分量)
+  reward:
+    # 导航奖励
+    w_approach: 15.0         # 目标接近奖励 (增强梯度)
+    w_proximity: 8.0         # 近距离塑形奖励 (二次函数，靠近目标梯度陡增)
+    w_goal: 30.0             # 目标完成奖励 (降低避免稀疏奖励主导)
+
+    # 数据采集奖励 (核心)
+    w_data_value: 3.0        # 数据价值采集 (降低减少导航冲突)
+    w_value_guide: 0.5       # 高价值区域引导 (大幅降低避免与目标冲突)
+    w_coverage: 0.5          # 覆盖率奖励
+
+    # 效率/安全惩罚
+    w_efficiency: 0.5        # 路径效率
+    w_repeat: 1.0            # 重复访问惩罚
+    w_collision: 10.0        # 碰撞危险惩罚
+    w_speed: 1.0             # 速度跟踪 (增强鼓励移动)
+    w_time: 0.05             # 时间惩罚 (增强紧迫感)
+
+    # 奖励值
+    first_visit_bonus: 2.0
+    collision_penalty: -2.0
+    near_obstacle_scale: 5.0
+    safe_distance: 1.0       # meters
+    stall_penalty: -0.5
+    min_speed_threshold: 0.05  # m/s
+    max_repeat_penalty: 0.03   # 每步重复访问惩罚上限
+
+  # 数据价值扇区参数
+  data_value_scan:
+    num_sectors: 8
+    scan_range: 10.0         # meters
+    noise_std: 0.1           # 值扰动
+
+  # 障碍物扇区参数
+  obstacle_scan:
+    num_sectors: 4           # 前后左右
+    scan_range: 5.0          # meters
+
+# ========================================
+# PPO 训练参数
+# ========================================
+training:
+  # 网络架构
+  actor_hidden_dims: [256, 128, 64]
+  critic_hidden_dims: [256, 128, 64]
+  activation: ELU
+  init_noise_std: 0.5
+
+  # PPO 超参数
+  learning_rate: 0.0003
+  gamma: 0.99               # 折扣因子 (0.99=10s有效视野，重视近期密集奖励)
+  lam: 0.95                 # GAE lambda
+  epsilon: 0.2              # PPO clip
+  epochs: 8                 # 优化轮数 (翻倍以更充分利用样本)
+  mini_batches: 4           # mini-batch 数
+  entropy_coef: 0.1         # 熵系数 (提高10x促进探索)
+  max_grad_norm: 1.0        # 梯度裁剪
+
+  # 熵衰减 (更慢衰减，保持探索更久)
+  entropy_decay: 0.9995
+  min_entropy_coef: 0.005
+
+  # 连续动作参数
+  init_log_std: 0.0
+  min_log_std: -20.0
+  max_log_std: 2.0
+
+  # 优化设置
+  use_gradient_clipping: true
+  gradient_clip_value: 1.0
+  use_lr_scheduler: true
+  lr_decay_rate: 0.999
+  use_amp: true                  # 混合精度训练（~2x 前向/反向加速）
+
+  # 训练设置 (Isaac Gym 并行)
+  num_envs: 1024            # 并行环境数 (从4096降低以配合更长的rollout)
+  steps_per_env: 128        # 每次 update 的 Aurora 步数 (= 12.8s，覆盖~21% episode)
+  episode_length_s: 60      # 每回合 60 秒
+  max_iterations: 5000      # 最大迭代
+  save_interval: 100        # 保存间隔
+
+  # 环境设置
+  env_width: 30             # 环境宽度 (米)
+  env_height: 30            # 环境高度 (米)
+  grid_resolution: 0.5      # 网格分辨率 (米)
+  max_range: 10.0           # 观测最大范围 (米)
+  num_targets: 2            # 目标数量
+  num_obstacles: 15         # 障碍物集群数
+
+  # 域随机化 (数据价值层)
+  value_map_noise: 0.1      # ±10% 数据价值扰动
+  random_start: true        # 随机起始位置
+  random_goal: true         # 按价值分布采样目标
+
+  # 课程学习 (分阶段增加难度)
+  curriculum: true
+  curriculum_success_threshold: 0.4   # 推进到下一阶段的成功率阈值
+  curriculum_window: 100              # 计算成功率的 episode 窗口
+  curriculum_stages:
+    - {name: "easy",   num_targets: 1, num_obstacles: 3,  env_size: 15, goal_threshold: 5.0, steps: 500}
+    - {name: "medium", num_targets: 1, num_obstacles: 8,  env_size: 20, goal_threshold: 4.0, steps: 800}
+    - {name: "hard",   num_targets: 2, num_obstacles: 12, env_size: 25, goal_threshold: 3.0, steps: 1000}
+    - {name: "full",   num_targets: 2, num_obstacles: 15, env_size: 30, goal_threshold: 3.0, steps: 2700}
